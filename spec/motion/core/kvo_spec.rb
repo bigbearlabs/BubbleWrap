@@ -215,8 +215,50 @@ describe BubbleWrap::KVO do
       observed.should == false
     end
   
+    #
+
+    it "should observe a key path with many segments" do
+      observed = false
+      @example.observe 'label.text' do |old_value, new_value|
+        observed = true
+      end
+
+      @example.label.text = 'some val'      
+      observed.should == true
+    end
+
+    it "should be orthogonal to eigenclass modifications" do
+      # set an ivar
+      class << @example
+        def init_ivar
+          @ivar = "I'm an ivar."
+        end
+      end
+
+      observed1 = false
+      observed2 = false
+      @example.observe :age do |old_value, new_value|
+        observed1 = true
+      end
+      @example.observe 'label.text' do |old_value, new_value|
+        observed2 = true
+      end
+
+      @example.init_ivar
+      @example.age = 42
+      @example.label.text = 'some val'
+
+      puts "class hierarchy: #{@example.class.ancestors}"
+      puts "ivars: #{@example.instance_variables}"
+
+      observed1.should == true
+      observed2.should == true
+      @example.age.should == 42
+      @example.instance_variable_get(:@age).should == 42
+      @example.instance_variable_get(:@ivar).should == "I'm an ivar."
+    end
   end
- 
+
 =begin
   it "should be able to observe a collection" do
     observed = false
