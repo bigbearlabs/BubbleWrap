@@ -257,6 +257,15 @@ describe BubbleWrap::KVO do
       @example.instance_variable_get(:@age).should == 42
       @example.instance_variable_get(:@ivar).should == "I'm an ivar."
     end
+
+# should allow observations for same key registered from different subclasses
+
+# should be orthogonal to mixins
+
+# should work with property supplied by module
+
+
+
   end
 
 =begin
