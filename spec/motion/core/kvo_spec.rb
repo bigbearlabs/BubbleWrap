@@ -263,9 +263,29 @@ describe BubbleWrap::KVO do
 
       # TODO should be orthogonal to mixins
 
-      # TODO should work with property supplied by module
+      it "should be orthogonal to mixins in class hierarchy" do
+        class KvoMixinExample
+          include ExampleModule
+        end
+
+        example = KvoMixinExample.new
+
+        observed1 = false
+        example.observe :age do |old_value, new_value|
+          observed1 = true
+        end
+
+        # mix in after observation.
+        class KvoMixinExample
+          include ExampleModule2
+        end
+
+        example.age = 42
+        observed1.should == true
+      end
+
     end
-    
+
   end
 
 
@@ -282,4 +302,16 @@ describe BubbleWrap::KVO do
   end
 =end
 
+end
+
+
+class KvoMixinExample < KvoExample  
+end
+
+module ExampleModule
+  attr_accessor :module_prop
+end
+
+module ExampleModule2
+  attr_accessor :module_prop
 end
