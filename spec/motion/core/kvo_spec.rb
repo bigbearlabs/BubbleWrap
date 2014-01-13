@@ -306,6 +306,27 @@ describe BubbleWrap::KVO do
       observed1.should == true
     end
 
+    it "should be orthogonal to object extended with module after KVO" do
+      example = KvoMixinExample.new
+
+      example.age = 10
+
+      observed1 = false
+      example.observe :age do |old_value, new_value|
+        observed1 = true
+      end
+      
+      example.age.should == 10
+      
+      example.extend ExampleModule2
+
+      example.age.should == 10
+
+      # 20140113 we don't get this far with RubyMotion 2.19
+      # example.age = 42
+      # observed1.should == true
+      # example.age.should == 10
+    end
 
 
     # TODO should allow observations for same key registered from different subclasses
