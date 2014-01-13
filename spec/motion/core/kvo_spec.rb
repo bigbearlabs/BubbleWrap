@@ -285,6 +285,32 @@ describe BubbleWrap::KVO do
       end
 
     end
+    
+    it "should be orthogonal to object extended with module before KVO" do
+      example = KvoMixinExample.new
+
+      example.age = 10
+
+      example.extend ExampleModule
+
+      example.age.should == 10
+
+      observed1 = false
+      example.observe :age do |old_value, new_value|
+        observed1 = true
+      end
+      
+      example.age.should == 10
+      
+      example.age = 42
+      observed1.should == true
+    end
+
+
+
+    # TODO should allow observations for same key registered from different subclasses
+
+    # TODO should work with property supplied by module
 
   end
 
